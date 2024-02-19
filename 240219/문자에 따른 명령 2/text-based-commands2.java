@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Main {
 
-    static int[] dx = {-1,0,1,0};
+    static int[] dx = {1,0,-1,0};
     static int[] dy = {0,1,0,-1};
 
     public static void main(String[] args) throws Exception {
@@ -22,8 +22,8 @@ public class Main {
             }else if(cur=='R'){
                 dir = (dir+1)%4;
             }else if(cur=='F'){
-                x +=dx[dir];
-                y +=dy[dir];
+                x += dx[dir];
+                y += dy[dir];
             }
         }
         System.out.println(y+" "+x);
