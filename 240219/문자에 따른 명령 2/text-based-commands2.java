@@ -3,8 +3,8 @@ import java.util.*;
 
 public class Main {
 
-    static int[] dx = {1,0,-1,0};
-    static int[] dy = {0,1,0,-1};
+    static int[] dy = {1,0,-1,0};
+    static int[] dx = {0,1,0,-1};
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -18,14 +18,14 @@ public class Main {
         for(int i = 0;i<input.length();i++){
             char cur = input.charAt(i);
             if(cur=='L'){
-                dir = (3 - dir) % 4;
+                dir = (dir + 3) % 4;
             }else if(cur=='R'){
-                dir = (dir+1)%4;
+                dir = (dir + 1) % 4;
             }else if(cur=='F'){
                 x += dx[dir];
                 y += dy[dir];
             }
         }
-        System.out.println(y+" "+x);
+        System.out.println(x+" "+y);
     }
 }
