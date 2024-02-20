@@ -15,7 +15,7 @@ public class Main {
             StringTokenizer st = new StringTokenizer(br.readLine());
             for(int j = 0; j < N; j++){
                 map[i][j] = Integer.parseInt(st.nextToken());
-                dp[i][j] = 1_000_001;
+                dp[i][j] = 100_000_001;
             }
         }
 
