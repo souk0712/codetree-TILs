@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -12,7 +13,8 @@ public class Main {
 
 	static int N, M, P, C, D, outCount;
 	static int rudolX, rudolY, rudolDir;
-	static Map<Integer, Santa> map;
+	static Map<Integer, Integer> indexs;
+	static ArrayList<Santa> list;
 	static int[][] visit;
 	static int[] rx = { -1, 0, 1, 0, -1, 1, 1, -1 };
 	static int[] ry = { 0, 1, 0, -1, 1, 1, -1, -1 };
@@ -33,14 +35,16 @@ public class Main {
 		rudolX = Integer.parseInt(st.nextToken());
 		rudolY = Integer.parseInt(st.nextToken());
 		rudolDir = 0;
-		map = new HashMap<>();
+		list = new ArrayList<>();
+		indexs = new HashMap<>();
 		visit = new int[N + 1][N + 1];
 		for (int i = 0; i < P; i++) {
 			st = new StringTokenizer(br.readLine());
 			int p = Integer.parseInt(st.nextToken());
 			int sr = Integer.parseInt(st.nextToken());
 			int sc = Integer.parseInt(st.nextToken());
-			map.put(p, new Santa(p, sr, sc));
+			indexs.put(p, i);
+			list.add(new Santa(p, sr, sc));
 			visit[sr][sc] = p;
 		}
 		outCount = 0;
@@ -52,7 +56,8 @@ public class Main {
 			}
 			addScore();
 		}
-		for (Santa s : map.values()) {
+		for (int i = 1; i <= P; i++) {
+			Santa s = list.get(indexs.get(i));
 			sb.append(s.score).append(" ");
 		}
 		System.out.println(sb);
@@ -60,7 +65,8 @@ public class Main {
 
 	// 매 턴 이후 아직 탈락하지 않은 산타들에게는 1점씩을 추가로 부여
 	private static void addScore() {
-		for (Santa s : map.values()) {
+		for (int i = 1; i <= P; i++) {
+			Santa s = list.get(indexs.get(i));
 			if (s.dead)
 				continue;
 			s.score += 1;
@@ -73,11 +79,11 @@ public class Main {
 	// 상호작용
 	private static void throwOut(int dir, int index) {
 		Queue<Santa> q = new LinkedList<>();
-		q.offer(map.get(index));
+		Santa s = list.get(indexs.get(index));
+		q.offer(s);
 		while (!q.isEmpty()) {
 			// 밀려나는 산타
 			Santa cur = q.poll();
-			visit[cur.x][cur.y] = 0;
 			int mx = cur.x + rx[dir];
 			int my = cur.y + ry[dir];
 
@@ -87,22 +93,13 @@ public class Main {
 				outCount++;
 				continue;
 			}
-
+			// 그 옆에 산타가 있다면 연쇄적으로 1칸씩 밀려나는 것을 반복
+			if (visit[mx][my] > 0) {
+				q.offer(list.get(indexs.get(visit[mx][my])));
+			}
 			cur.x = mx;
 			cur.y = my;
 			visit[cur.x][cur.y] = cur.index;
-
-			// 그 옆에 산타가 있다면 연쇄적으로 1칸씩 밀려나는 것을 반복
-			for (int i = 0; i < dx.length; i++) {
-				int nx = cur.x + dx[i];
-				int ny = cur.y + dy[i];
-				if (isOutRange(nx, ny)) {
-					continue;
-				}
-				if (visit[nx][ny] > 0) {
-					q.offer(map.get(visit[nx][ny]));
-				}
-			}
 		}
 
 	}
@@ -120,16 +117,18 @@ public class Main {
 		}
 		s.x = mx;
 		s.y = my;
-		if (visit[mx][my] > 0) {
-			throwOut(dir, visit[mx][my]);
-		}
+		int throwIndex = visit[s.x][s.y];
 		visit[s.x][s.y] = s.index;
+		if (throwIndex > 0) {
+			throwOut(dir, throwIndex);
+		}
 		s.faintCnt = 2;
 	}
 
 	// 산타의 움직임
 	private static void moveSanta() {
-		for (Santa s : map.values()) {
+		for (int i = 1; i <= P; i++) {
+			Santa s = list.get(indexs.get(i));
 			if (s.faintCnt > 0 || s.dead)
 				continue;
 			int min = getDist(rudolX, rudolY, s.x, s.y);
@@ -164,7 +163,8 @@ public class Main {
 	// 루돌프의 움직임
 	private static void moveRudol() {
 		PriorityQueue<Santa> pq = new PriorityQueue<>();
-		for (Santa s : map.values()) {
+		for (int i = 1; i <= P; i++) {
+			Santa s = list.get(indexs.get(i));
 			if (s.dead)
 				continue;
 			int dist = getDist(rudolX, rudolY, s.x, s.y);
@@ -172,7 +172,7 @@ public class Main {
 			pq.offer(s);
 		}
 		Santa distSanta = pq.poll();
-		int min = Integer.MAX_VALUE;
+		int min = getDist(rudolX, rudolY, distSanta.x, distSanta.y);
 		int resX = rudolX, resY = rudolY;
 		for (int i = 0; i < rx.length; i++) {
 			int mx = rudolX + rx[i];
@@ -199,8 +199,7 @@ public class Main {
 	}
 
 	private static int getDist(int x, int y, int mx, int my) {
-		int dist = (x - mx) * (x - mx) + (y - my) * (y - my);
-		return dist;
+		return (x - mx) * (x - mx) + (y - my) * (y - my);
 	}
 
 	static class Santa implements Comparable<Santa> {
@@ -213,7 +212,8 @@ public class Main {
 			this.index = index;
 			this.faintCnt = 0;
 			this.score = 0;
-			this.dir = Integer.MAX_VALUE;
+			this.dir = 0;
+			this.dist = Integer.MAX_VALUE;
 			this.dead = false;
 		}
 
