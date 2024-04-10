@@ -84,6 +84,7 @@ public class Main {
 			// 게임판 밖이면 탈락
 			if (isOutRange(mx, my)) {
 				cur.dead = true;
+				outCount++;
 				continue;
 			}
 
