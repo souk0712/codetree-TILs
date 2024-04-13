@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 // 6:45
@@ -13,6 +15,7 @@ public class Main {
 	static int[] dx = { -1, 0, 1, 0 };
 	static int[] dy = { 0, 1, 0, -1 };
 	static Knight[] arr;
+	static Set<Integer> damages, knights;
 	static int[] k;
 
 	// 0이라면 빈칸
@@ -58,11 +61,23 @@ public class Main {
 		// i번 기사에게 방향 d로 한 칸 이동하라는 명령
 		// 이미 사라진 기사 번호가 주어질 수도 있음에 유의
 		for (int i = 0; i < Q; i++) {
+			damages = new HashSet<>();
+			knights = new HashSet<>();
 			st = new StringTokenizer(br.readLine());
 			int num = Integer.parseInt(st.nextToken());
 			int d = Integer.parseInt(st.nextToken());
+			if (arr[num].dead)
+				continue;
 			setVisit();
 			moveKnight(num, num, d);
+			for (int s : knights) {
+				Knight knight = arr[s];
+				knight.x += dx[d];
+				knight.y += dy[d];
+			}
+			for (int s : damages) {
+				fightDamage(arr[s]);
+			}
 		}
 		setVisit();
 		printAnswer();
@@ -71,6 +86,8 @@ public class Main {
 	static void setVisit() {
 		visit = new int[L][L];
 		for (int i = 1; i < arr.length; i++) {
+			if (arr[i].dead)
+				continue;
 			setKnightVisit(arr[i]);
 		}
 	}
@@ -158,7 +175,7 @@ public class Main {
 			}
 			// 다른 기사 영역일 경우
 			else {
-				if (!moveKnight(num, visit[mx][my], d)) {
+				if (!moveKnight(origin, visit[mx][my], d)) {
 					check = false;
 					break;
 				}
@@ -166,10 +183,9 @@ public class Main {
 		}
 
 		if (check) {
-			knight.x += dx[d];
-			knight.y += dy[d];
+			knights.add(knight.index);
 			if (knight.index != origin) {
-				fightDamage(knight);
+				damages.add(knight.index);
 			}
 		}
 		return check;
