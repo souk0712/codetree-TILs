@@ -1,13 +1,11 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-// 6:45
 public class Main {
 
 	static int L, N, Q;
@@ -60,6 +58,7 @@ public class Main {
 		// (i,d) 형태
 		// i번 기사에게 방향 d로 한 칸 이동하라는 명령
 		// 이미 사라진 기사 번호가 주어질 수도 있음에 유의
+		setVisit();
 		for (int i = 0; i < Q; i++) {
 			damages = new HashSet<>();
 			knights = new HashSet<>();
@@ -68,18 +67,19 @@ public class Main {
 			int d = Integer.parseInt(st.nextToken());
 			if (arr[num].dead)
 				continue;
+			if (moveKnight(num, num, d)) {
+				for (int s : knights) {
+					Knight knight = arr[s];
+					knight.x += dx[d];
+					knight.y += dy[d];
+				}
+				for (int s : damages) {
+					fightDamage(arr[s]);
+				}
+			}
+
 			setVisit();
-			moveKnight(num, num, d);
-			for (int s : knights) {
-				Knight knight = arr[s];
-				knight.x += dx[d];
-				knight.y += dy[d];
-			}
-			for (int s : damages) {
-				fightDamage(arr[s]);
-			}
 		}
-		setVisit();
 		printAnswer();
 	}
 
