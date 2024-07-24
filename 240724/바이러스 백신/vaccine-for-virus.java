@@ -53,7 +53,6 @@ public class Main {
     static int bfs(int[] pick, int tot){
         boolean[][] visit = new boolean[N][N];
         Deque<int[]> dq = new ArrayDeque<>();
-        tot += M;
         for(int i = 0; i < pick.length; i++){
             int[] pos = hospital.get(pick[i]);
             visit[pos[0]][pos[1]] = true;
@@ -62,7 +61,7 @@ public class Main {
 
         while(!dq.isEmpty()){
             int[] cur = dq.poll();
-            tot--;
+            if(map[cur[0]][cur[1]] == 0) tot--;
             if(tot == 0){ 
                 return cur[2];
             }
@@ -70,7 +69,7 @@ public class Main {
                 int mx = cur[0] + dx[k];
                 int my = cur[1] + dy[k];
                 if(mx < 0 || my < 0 || mx >= N || my >= N) continue;
-                if(visit[mx][my] || map[mx][my] != 0) continue;
+                if(visit[mx][my] || map[mx][my] == 1) continue;
                 visit[mx][my] = true;
                 dq.offer(new int[]{mx, my, cur[2] + 1});
             }
