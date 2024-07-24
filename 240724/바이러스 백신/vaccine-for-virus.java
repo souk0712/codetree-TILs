@@ -37,7 +37,7 @@ public class Main {
 
     static void comb(int[] pick, boolean[] visit, int start, int count){
         if(count == M){
-            ans = Math.min(ans, bfs(pick));
+            ans = Math.min(ans, bfs(pick, total));
             return;
         }
 
@@ -50,9 +50,10 @@ public class Main {
         }
     }
 
-    static int bfs(int[] pick){
+    static int bfs(int[] pick, int tot){
         boolean[][] visit = new boolean[N][N];
         Deque<int[]> dq = new ArrayDeque<>();
+        tot += M;
         for(int i = 0; i < pick.length; i++){
             int[] pos = hospital.get(pick[i]);
             visit[pos[0]][pos[1]] = true;
@@ -61,8 +62,8 @@ public class Main {
 
         while(!dq.isEmpty()){
             int[] cur = dq.poll();
-            total--;
-            if(total == 0){ 
+            tot--;
+            if(tot == 0){ 
                 return cur[2];
             }
             for(int k = 0; k < dx.length; k++){
