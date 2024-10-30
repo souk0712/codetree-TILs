@@ -15,6 +15,7 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         Q = Integer.parseInt(br.readLine());
         products = new HashMap<>();
+        pq = new PriorityQueue<>();
         for(int i = 0; i < Q; i++){
             StringTokenizer st = new StringTokenizer(br.readLine());
             int code = Integer.parseInt(st.nextToken());
@@ -22,78 +23,96 @@ public class Main {
             switch(code){
                 // (1) 코드트리 랜드 건설
                 case 100:
-                    N = Integer.parseInt(st.nextToken());
-                    M = Integer.parseInt(st.nextToken());
-                    travelList = new ArrayList[N];
-                    for(int j = 0; j < N; j++)travelList[j] = new ArrayList<>();
-                    for(int j = 0; j < M; j++){
-                        int v = Integer.parseInt(st.nextToken());
-                        int u = Integer.parseInt(st.nextToken());
-                        int w = Integer.parseInt(st.nextToken());
-                        travelList[v].add(new Land(u, w));
-                        travelList[u].add(new Land(v, w));
-                    }
-                    dist = new int[N];
-                    dijkstra(0);
-                    pq = new PriorityQueue<>();
-                    
+                    buildCodeTree(st);
                     break;
                 // (2) 여행 상품 생성
                 case 200:
                     id = Integer.parseInt(st.nextToken());
                     int revenue = Integer.parseInt(st.nextToken());
                     int dest = Integer.parseInt(st.nextToken());
-                    Product p = new Product(id, revenue, dest, dist[dest]);
-                    products.put(id, p);
-                    pq.offer(p);
+                    createTravelProduct(id,revenue,dest);
                     break;
                 // (3) 여행 상품 취소
                 case 300:
                     id = Integer.parseInt(st.nextToken());
-                    if(products.containsKey(id)){
-                        products.remove(id);
-                    }
+                    cancelTravelProduct(id);
                     break;
                 // (4) 최적의 여행 상품 판매
                 case 400:
-                    if(pq.isEmpty()){
-                        sb.append(-1).append("\n");
-                        break;
-                    }
-                    boolean check = true;
-                    while(!pq.isEmpty()){
-                        Product top = pq.poll();
-                        if(products.containsKey(top.id)){
-                            if(top.cost >= 0){
-                                products.remove(top.id);
-                                sb.append(top.id).append("\n");
-                            }else{
-                                pq.offer(top);
-                                sb.append(-1).append("\n");
-                            }
-                            check = false;
-                            break;
-                        }
-                    }
-                    if(check){
-                        sb.append(-1).append("\n");
-                    }
+                    saleBestTravelProduct(sb);
                     break;
                 // (5) 여행 상품의 출발지 변경
                 case 500:
                     id = Integer.parseInt(st.nextToken());
-                    dijkstra(id);
-                    for(Product pp : products.values()){
-                        pp.setDistance(dist[pp.dest]);
-                    }
-                    pq = new PriorityQueue<>();
-                    for(Product pp : products.values()){
-                        pq.offer(pp);
-                    }
+                    changeStartOfTravelProduct(id);
                     break;
             }
         }
         System.out.println(sb);
+    }
+
+    static void changeStartOfTravelProduct(int id){
+        dijkstra(id);
+        for(Product pp : products.values()){
+            pp.setDistance(dist[pp.dest]);
+        }
+        pq = new PriorityQueue<>();
+        for(Product pp : products.values()){
+            pq.offer(pp);
+        }
+    }
+
+    static void saleBestTravelProduct(StringBuilder sb){
+        if(pq.isEmpty()){
+            sb.append(-1).append("\n");
+            return;
+        }
+        boolean check = true;
+        while(!pq.isEmpty()){
+            Product top = pq.poll();
+            if(products.containsKey(top.id)){
+                if(top.cost >= 0){
+                    products.remove(top.id);
+                    sb.append(top.id).append("\n");
+                }else{
+                    pq.offer(top);
+                    sb.append(-1).append("\n");
+                }
+                check = false;
+                break;
+            }
+        }
+        if(check){
+            sb.append(-1).append("\n");
+        }
+    }
+
+    static void cancelTravelProduct(int id){
+        if(products.containsKey(id)){
+            products.remove(id);
+        }
+    }
+
+    static void createTravelProduct(int id, int revenue, int dest){
+        Product p = new Product(id, revenue, dest, dist[dest]);
+        products.put(id, p);
+        pq.offer(p);
+    }
+
+    static void buildCodeTree(StringTokenizer st){
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        travelList = new ArrayList[N];
+        for(int j = 0; j < N; j++)travelList[j] = new ArrayList<>();
+        for(int j = 0; j < M; j++){
+            int v = Integer.parseInt(st.nextToken());
+            int u = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+            travelList[v].add(new Land(u, w));
+            travelList[u].add(new Land(v, w));
+        }
+        dist = new int[N];
+        dijkstra(0);
     }
 
     static void dijkstra(int start){
@@ -153,11 +172,6 @@ public class Main {
                 return Integer.compare(id, o.id);
             }
             return c;
-        }
-
-        @Override
-        public String toString(){
-            return "id: " + id + ", revenue: " + revenue + ", dest: " + dest +", distance: "+ distance+", cost:" + cost;
         }
     }
 }
