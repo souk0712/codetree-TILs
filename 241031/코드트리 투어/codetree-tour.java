@@ -40,7 +40,7 @@ public class Main {
                     id = Integer.parseInt(st.nextToken());
                     int revenue = Integer.parseInt(st.nextToken());
                     int dest = Integer.parseInt(st.nextToken());
-                    products.put(id, new Product(id, revenue, dest, dist[dest]));
+                    products.put(id, new Product(id, revenue, dest));
                     break;
                 // (3) 여행 상품 취소
                 case 300:
@@ -51,7 +51,13 @@ public class Main {
                     break;
                 // (4) 최적의 여행 상품 판매
                 case 400:
-                    PriorityQueue<Product> pq = new PriorityQueue<>();
+                    PriorityQueue<Product> pq = new PriorityQueue<>((o1, o2)->{
+                        int c = Integer.compare(o2.revenue - dist[o2.dest], o1.revenue - dist[o1.dest]);
+                        if(c == 0){
+                            return Integer.compare(o1.id, o2.id);
+                        }
+                        return c;
+                    });
                     for(Product p : products.values()){
                         pq.offer(p);
                     }
@@ -59,7 +65,8 @@ public class Main {
                         sb.append(-1).append("\n");
                     }else{
                         Product top = pq.poll();
-                        if(top.cost >= 0){
+                        int cost = top.revenue - dist[top.dest];
+                        if(cost >= 0){
                             products.remove(top.id);
                             sb.append(top.id).append("\n");
                         }else{
@@ -71,9 +78,6 @@ public class Main {
                 case 500:
                     id = Integer.parseInt(st.nextToken());
                     dijkstra(id);
-                    for(Product p : products.values()){
-                        p.setDistance(dist[p.dest]);
-                    }
                     break;
             }
         }
@@ -115,28 +119,13 @@ public class Main {
         }
     }
 
-    static class Product implements Comparable<Product> {
-        int id, revenue, dest, distance, cost;
+    static class Product {
+        int id, revenue, dest;
 
-        Product(int id, int revenue, int dest, int distance){
+        Product(int id, int revenue, int dest){
             this.id = id;
             this.revenue = revenue;
             this.dest = dest;
-            this.distance = distance;
-            this.cost = revenue - distance;
-        }
-
-        public void setDistance(int distance){
-            this.distance = distance;
-            this.cost = revenue - distance;
-        }
-        @Override
-        public int compareTo(Product o){
-            int c = Integer.compare(o.cost, cost);
-            if(c == 0){
-                return Integer.compare(id, o.id);
-            }
-            return c;
         }
     }
 }
