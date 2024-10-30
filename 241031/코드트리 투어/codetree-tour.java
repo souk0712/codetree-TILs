@@ -60,17 +60,24 @@ public class Main {
                         sb.append(-1).append("\n");
                         break;
                     }
+                    boolean check = true;
                     while(!pq.isEmpty()){
                         Product top = pq.poll();
+                        // System.out.println(top);
                         if(products.containsKey(top.id)){
                             if(top.cost >= 0){
                                 products.remove(top.id);
                                 sb.append(top.id).append("\n");
                             }else{
+                                pq.offer(top);
                                 sb.append(-1).append("\n");
                             }
+                            check = false;
                             break;
                         }
+                    }
+                    if(check){
+                        sb.append(-1).append("\n");
                     }
                     break;
                 // (5) 여행 상품의 출발지 변경
