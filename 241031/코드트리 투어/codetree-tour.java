@@ -138,10 +138,5 @@ public class Main {
             }
             return c;
         }
-
-        @Override
-        public String toString(){
-            return "id: " + id + ", revenue: " + revenue + ", dest: " + dest +", distance: "+ distance+", cost:" + cost;
-        }
     }
 }
