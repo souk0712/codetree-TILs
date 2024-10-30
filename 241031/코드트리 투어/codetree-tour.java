@@ -63,7 +63,6 @@ public class Main {
                     boolean check = true;
                     while(!pq.isEmpty()){
                         Product top = pq.poll();
-                        // System.out.println(top);
                         if(products.containsKey(top.id)){
                             if(top.cost >= 0){
                                 products.remove(top.id);
