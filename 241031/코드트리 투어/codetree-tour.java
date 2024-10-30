@@ -25,7 +25,7 @@ public class Main {
                     M = Integer.parseInt(st.nextToken());
                     travelList = new ArrayList[N];
                     for(int j = 0; j < N; j++)travelList[j] = new ArrayList<>();
-                    for(int j = 0; j < N; j++){
+                    for(int j = 0; j < M; j++){
                         int v = Integer.parseInt(st.nextToken());
                         int u = Integer.parseInt(st.nextToken());
                         int w = Integer.parseInt(st.nextToken());
@@ -33,9 +33,7 @@ public class Main {
                         travelList[u].add(new Land(v, w));
                     }
                     dist = new int[N];
-                    Arrays.fill(dist, INF);
                     dijkstra(0);
-                    
                     break;
                 // (2) 여행 상품 생성
                 case 200:
@@ -84,6 +82,7 @@ public class Main {
 
     static void dijkstra(int start){
         PriorityQueue<Land> pq = new PriorityQueue<>();
+        Arrays.fill(dist, INF);
         dist[start] = 0;
         pq.offer(new Land(start, dist[start]));
 
