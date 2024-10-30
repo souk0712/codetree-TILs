@@ -88,6 +88,9 @@ public class Main {
 
         while(!pq.isEmpty()){
             Land cur = pq.poll();
+            if(dist[cur.next] < cur.cost){
+                continue;
+            }
             
             for(int k = 0; k < travelList[cur.next].size(); k++){
                 Land next = travelList[cur.next].get(k);
