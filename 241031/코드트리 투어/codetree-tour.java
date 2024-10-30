@@ -15,7 +15,6 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         Q = Integer.parseInt(br.readLine());
         products = new HashMap<>();
-        pq = new PriorityQueue<>();
         for(int i = 0; i < Q; i++){
             StringTokenizer st = new StringTokenizer(br.readLine());
             int code = Integer.parseInt(st.nextToken());
@@ -36,6 +35,8 @@ public class Main {
                     }
                     dist = new int[N];
                     dijkstra(0);
+                    pq = new PriorityQueue<>();
+                    
                     break;
                 // (2) 여행 상품 생성
                 case 200:
@@ -78,6 +79,10 @@ public class Main {
                     dijkstra(id);
                     for(Product pp : products.values()){
                         pp.setDistance(dist[pp.dest]);
+                    }
+                    pq = new PriorityQueue<>();
+                    for(Product pp : products.values()){
+                        pq.offer(pp);
                     }
                     break;
             }
