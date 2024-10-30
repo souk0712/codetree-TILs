@@ -29,6 +29,7 @@ public class Main {
                         int v = Integer.parseInt(st.nextToken());
                         int u = Integer.parseInt(st.nextToken());
                         int w = Integer.parseInt(st.nextToken());
+                        if(v == u) continue;
                         travelList[v].add(new Land(u, w));
                         travelList[u].add(new Land(v, w));
                     }
@@ -51,7 +52,7 @@ public class Main {
                     break;
                 // (4) 최적의 여행 상품 판매
                 case 400:
-                    PriorityQueue<Product> pq = new PriorityQueue<>((o1, o2)->{
+                    PriorityQueue<Product> pq = new PriorityQueue<>((o1, o2) -> {
                         int c = Integer.compare(o2.revenue - dist[o2.dest], o1.revenue - dist[o1.dest]);
                         if(c == 0){
                             return Integer.compare(o1.id, o2.id);
