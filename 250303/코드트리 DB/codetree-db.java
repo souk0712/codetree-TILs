@@ -69,10 +69,10 @@ public class Main {
 
     public static void sum(int k){
         int res = 0;
-        List<Map.Entry<String, Integer>> entries = new ArrayList<>(table.entrySet());
-        entries.sort((o1, o2)-> Integer.compare(o1.getValue(), o2.getValue()));
-        for(int i = 0; i < entries.size(); i++){
-            int value = entries.get(i).getValue();
+        PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>((o1, o2)-> Integer.compare(o1.getValue(), o2.getValue()));
+        pq.addAll(table.entrySet());
+        while(!pq.isEmpty()){
+            int value = pq.poll().getValue();
             if(value <= k){
                 res += value;
                 continue;
@@ -80,19 +80,5 @@ public class Main {
             break;
         }
         sb.append(res).append("\n");
-    }
-
-    static class Data implements Comparable<Data> {
-        String name;
-        int value;
-
-        Data(String name, int value){
-            this.name = name;
-            this.value = value;
-        }
-
-        public int compareTo(Data o){
-            return Integer.compare(value, o.value);
-        }
     }
 }
