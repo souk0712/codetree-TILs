@@ -59,6 +59,7 @@ public class Main {
             sb.append(0).append("\n");
         }else{
             int value = table.remove(name);
+            valueToName.remove(value);
             dynamicSegmentTree.update(value, 0);
             sb.append(value).append("\n");
         }
