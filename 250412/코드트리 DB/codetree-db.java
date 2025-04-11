@@ -5,6 +5,7 @@ public class Main {
 
     static int Q;
     static HashMap<String, Integer> table;
+    static HashMap<Integer, String> valueToName;
     static DynamicSegmentTree dynamicSegmentTree;
     static StringBuilder sb;
 
@@ -38,6 +39,7 @@ public class Main {
 
     public static void init(){
         table = new HashMap<>();
+        valueToName = new HashMap<>();
         dynamicSegmentTree = new DynamicSegmentTree();
     }
 
@@ -46,6 +48,7 @@ public class Main {
             sb.append(0).append("\n");
         }else{
             table.put(name, value);
+            valueToName.put(value, name);
             dynamicSegmentTree.update(value, value);
             sb.append(1).append("\n");
         }
@@ -67,9 +70,10 @@ public class Main {
             sb.append("None").append("\n");
             return;
         }
-        List<Map.Entry<String, Integer>> entries = new ArrayList<>(table.entrySet());
-        entries.sort((o1, o2)-> Integer.compare(o1.getValue(), o2.getValue()));
-        sb.append(entries.get(k - 1).getKey()).append("\n");
+        int value = dynamicSegmentTree.queryRank(k);
+        String name = valueToName.get(value);
+
+        sb.append(name).append("\n");
     }
 
     public static void sum(int k){
@@ -94,9 +98,11 @@ public class Main {
     static class Node {
         long value;
         Node left, right;
+        int count;
 
         Node(){
             this.value = 0;
+            this.count = 0;
             this.left = null;
             this.right = null;
         }
@@ -115,6 +121,7 @@ public class Main {
             if(idx < start || idx > end) return;
             if(start == end){
                 node.value = val;
+                node.count = val > 0 ? 1 : 0;
                 return;
             }
 
@@ -127,6 +134,7 @@ public class Main {
                 update(node.right, mid + 1, end, idx, val);
             }
             node.value = (node.left != null ? node.left.value : 0) + (node.right != null ? node.right.value : 0);
+            node.count = (node.left != null ? node.left.count : 0) + (node.right != null ? node.right.count : 0);
         }
 
         private long queryOfSum(Node node, int start, int end, int left, int right){
@@ -140,6 +148,21 @@ public class Main {
 
         public long queryOfSum(int k){
             return queryOfSum(root, MIN, MAX, MIN, k);
+        }
+
+        public int queryRank(int k) {
+        return queryRank(root, MIN, MAX, k);
+        }
+        
+        private int queryRank(Node node, int start, int end, int k) {
+            if (start == end) return start;
+            int mid = start + (end - start) / 2;
+            int leftCount = (node.left != null ? node.left.count : 0);
+            if (leftCount >= k) {
+                return queryRank(node.left, start, mid, k);
+            } else {
+                return queryRank(node.right, mid + 1, end, k - leftCount);
+            }
         }
     }
 }
