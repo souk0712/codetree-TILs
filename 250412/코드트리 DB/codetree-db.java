@@ -44,7 +44,7 @@ public class Main {
     }
 
     public static void insert(String name, int value){
-        if(table.containsKey(name) || table.containsValue(value)){
+        if(table.containsKey(name) || valueToName.containsKey(value)){
             sb.append(0).append("\n");
         }else{
             table.put(name, value);
